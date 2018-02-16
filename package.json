@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bichenkk/coinmon.git"
+    "url": "git+https://github.com/macako/coinmon.git"
   },
   "bin": {
     "coinmon": "./src/index.js"
@@ -24,15 +24,18 @@
   "author": "KK Chen",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bichenkk/coinmon/issues"
+    "url": "https://github.com/macako/coinmon/issues"
   },
-  "homepage": "https://github.com/bichenkk/coinmon#readme",
+  "homepage": "https://github.com/macako/coinmon#readme",
   "dependencies": {
     "axios": "^0.17.1",
     "cli-table2": "^0.2.0",
     "colors": "^1.1.2",
     "commander": "^2.11.0",
     "humanize-plus": "^1.8.2",
-    "ora": "^1.3.0"
+    "ora": "^1.3.0",
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.7.5",
+    "systeminformation": "^3.25.1"
   }
 }
