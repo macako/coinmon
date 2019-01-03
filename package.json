@@ -1,6 +1,6 @@
 {
-  "name": "coinmon",
-  "version": "0.0.13",
+  "name": "macakocoin",
+  "version": "1.0.0",
   "description": "A cryptocurrency price monitoring tool",
   "main": "index.js",
   "scripts": {
@@ -9,24 +9,27 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/macako/coinmon.git"
+    "url": "git+https://github.com/macako/macakocoin.git"
   },
   "bin": {
-    "coinmon": "./src/index.js"
+    "macakocoin": "./src/index.js"
   },
   "engines": {
     "node": ">=6.0.0"
   },
   "keywords": [
     "bitcoin",
-    "crypto"
+    "crypto",
+    "console",
+    "linux",
+    "nodejs"
   ],
-  "author": "KK Chen",
+  "author": "macako",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/macako/coinmon/issues"
+    "url": "https://github.com/macako/macakocoin/issues"
   },
-  "homepage": "https://github.com/macako/coinmon#readme",
+  "homepage": "https://github.com/macako/macakocoin#readme",
   "dependencies": {
     "axios": "^0.17.1",
     "cli-table2": "^0.2.0",

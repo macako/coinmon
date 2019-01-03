@@ -4,6 +4,12 @@ const contrib = require('blessed-contrib');
 const monitor = require('./monitor');
 const screen = blessed.screen();
 
+var bitso, coinMarketCap;
+const BITSO_KEY = 'b';
+const COIN_MARKET_CAP_KEY = 'c';
+const BITSO_LABEL = 'bitso (' + BITSO_KEY + ')';
+const COIN_MARKET_CAP_LABEL = 'coinmarketcap (' + COIN_MARKET_CAP_KEY + ')';
+
 var grid = new contrib.grid({
   rows: 12,
   cols: 10,
@@ -27,7 +33,7 @@ var coinMarketCapTable = grid.set(
   6,
   9,
   contrib.table,
-  configTable('coinmarketcap (z)', [7, 7, 17, 12, 12, 12, 14], false)
+  configTable(COIN_MARKET_CAP_LABEL, [7, 7, 17, 12, 12, 12, 14], false)
 );
 
 var bitsoTable = grid.set(
@@ -36,14 +42,14 @@ var bitsoTable = grid.set(
   5,
   9,
   contrib.table,
-  configTable('bitso (y)', [9, 18, 18, 18, 18], true)
+  configTable(BITSO_LABEL, [9, 18, 18, 18, 18], true)
 );
 
 screen.key(['escape', 'q', 'C-c'], function(ch, key) {
   return process.exit(0);
 });
 
-screen.key(['z', 'y'], function(ch, key) {
+screen.key([COIN_MARKET_CAP_KEY, BITSO_KEY], function(ch, key) {
   //allow control the table with the keyboard
   activeTable(ch);
 });
@@ -63,9 +69,9 @@ var activeTable = function(keyboard) {
     9,
     contrib.table,
     configTable(
-      'coinmarketcap (z)',
+      COIN_MARKET_CAP_LABEL,
       [7, 7, 17, 12, 12, 12, 14],
-      keyboard == 'z' ? true : false
+      keyboard == COIN_MARKET_CAP_KEY ? true : false
     )
   );
 
@@ -75,25 +81,22 @@ var activeTable = function(keyboard) {
     5,
     9,
     contrib.table,
-    configTable(
-      'bitso (y)',
-      [9, 18, 18, 18, 18],
-      keyboard == 'y' ? true : false
-    )
+    configTable(BITSO_LABEL, [9, 18, 18, 18, 18], keyboard == BITSO_KEY ? true : false)
   );
 
-  init();
+  coinMarketCap.refreshTable(coinMarketCapTable);
+  bitso.refreshTable(bitsoTable);
 
-  if (keyboard == 'z') {
+  if (keyboard == COIN_MARKET_CAP_KEY) {
     coinMarketCapTable.focus();
-  } else if (keyboard == 'y') {
+  } else if (keyboard == BITSO_KEY) {
     bitsoTable.focus();
   }
 };
 
 function init() {
-  new monitor.MarketCoinCap(coinMarketCapTable); // no Windows supportD
-  new monitor.Bitso(bitsoTable); // no Windows supportD
+  coinMarketCap = new monitor.MarketCoinCap(coinMarketCapTable); // no Windows supportD
+  bitso = new monitor.Bitso(bitsoTable); // no Windows supportD
 }
 
 init();

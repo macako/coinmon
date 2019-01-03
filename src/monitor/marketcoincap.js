@@ -1,66 +1,31 @@
-var si = require('systeminformation'),
-  utils = require('../utils');
+var utils = require('../utils');
 const axios = require('axios');
-const colors2 = require('colors');
+const colors = require('colors');
 const humanize = require('humanize-plus');
+const CoinBase = require('./coinbase');
 
-var colors = utils.colors;
+const sourceUrl = 'https://api.coinmarketcap.com/v1/ticker/?limit=10&convert=MXN';
 
-var pars = {
-  r: 'rank',
-  c: 'symbol',
-  p: 'price'
-};
+class MarketCoinCap extends CoinBase {
+  constructor(table) {
+    super(table, 'coinMarketCap', sourceUrl);
+    this.convert = 'MXN';
+    this.marketcapConvert = this.convert === 'BTC' ? 'USD' : this.convert;
+    this.top = '10';
 
-const convert = 'MXN';
-const marketcapConvert = convert === 'BTC' ? 'USD' : convert;
-const top = '10';
-const humanizeIsEnabled = true;
-const sourceUrl = `https://api.coinmarketcap.com/v1/ticker/?limit=${top}&convert=${convert}`;
+    this.headers = [
+      'Rank',
+      'Coin',
+      `Price ${this.convert}`,
+      'Change 1H',
+      'Change 24H',
+      'Change 7D',
+      `Market Cap ${this.marketcapConvert}`
+    ];
+  }
 
-function MarketCoinCap(table) {
-  this.table = table;
-
-  this.pSort = 'price';
-  this.reIndex = false;
-  this.reverse = false;
-
-  var that = this;
-
-  var updater = function() {
-    axios
-      .get(sourceUrl)
-      .then(function(response) {
-        that.updateData(response.data);
-      })
-      .catch(function(error) {
-        console.error(
-          'Coinmon is not working now. Please try again later.'.red
-        );
-      });
-  };
-  updater();
-  this.interval = setInterval(updater, 3000);
-  this.table.screen.key(['r', 'c', 'p'], function(ch, key) {
-    if (pars[ch] == that.pSort) {
-      that.reverse = !that.reverse;
-    } else {
-      that.pSort = pars[ch] || that.pSort;
-    }
-
-    that.reIndex = true;
-    updater();
-  });
-}
-
-MarketCoinCap.prototype.updateData = function(data) {
-  var par = this.pSort;
-
-  var data = data
-    .sort(function(a, b) {
-      return b[par] - a[par];
-    })
-    .map(record => {
+  updateData(data) {
+    var _data = data.map(record => {
       const percentChange1h = record.percent_change_1h;
       const textChange1h = `${percentChange1h}%`;
       const change1h = percentChange1h
@@ -79,16 +44,16 @@ MarketCoinCap.prototype.updateData = function(data) {
         ? percentChange7d > 0 ? textChange7d.green : textChange7d.red
         : 'NA';
 
-      const marketCap = record[`market_cap_${marketcapConvert}`.toLowerCase()];
+      const marketCap = record[`market_cap_${this.marketcapConvert}`.toLowerCase()];
       const displayedMarketCap =
-        marketCap && humanizeIsEnabled
+        marketCap && this.humanizeIsEnabled
           ? humanize.compactInteger(marketCap, 3)
           : marketCap;
 
       return [
         record.rank,
         record.symbol,
-        record[`price_${convert}`.toLowerCase()],
+        record[`price_${this.convert}`.toLowerCase()],
         change1h,
         change24h,
         change7d,
@@ -96,35 +61,8 @@ MarketCoinCap.prototype.updateData = function(data) {
       ];
     });
 
-  const headers = [
-    'Rank',
-    'Coin',
-    `Price ${convert}`,
-    'Change 1H',
-    'Change 24H',
-    'Change 7D',
-    `Market Cap ${marketcapConvert}`
-  ];
-
-  headers[
-    {
-      rank: 0,
-      symbol: 1,
-      price: 2
-    }[this.pSort]
-  ] += this.reverse ? '▼' : '▲';
-
-  this.table.setData({
-    headers: headers,
-    data: this.reverse ? data.reverse() : data
-  });
-
-  if (this.reIndex) {
-    this.table.rows.select(0);
-    this.reIndex = false;
+    this.setDataTable(_data);
   }
-
-  this.table.screen.render();
-};
+}
 
 module.exports = MarketCoinCap;
