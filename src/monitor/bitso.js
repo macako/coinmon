@@ -1,9 +1,10 @@
 const humanize = require('humanize-plus');
 const CoinBase = require('./coinbase');
+const constants = require('../utils/constants.js');
 
 class Bitso extends CoinBase {
-  constructor(table) {
-    super(table, 'bitso', 'https://api.bitso.com/v3/ticker/');
+  constructor(fn) {
+    super(fn, constants.BITSO_KEY, 'bitso', 'https://api.bitso.com/v3/ticker/');
     this.headers = [
       'Mercado',
       'Precio',

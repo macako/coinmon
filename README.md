@@ -1,4 +1,3 @@
-
 <img src="https://raw.githubusercontent.com/bichenkk/coinmon/master/logo.png">
 
 [![Node version](https://img.shields.io/badge/node.js-%3E=_6.0-green.svg)](http://nodejs.org/download/)
@@ -13,11 +12,13 @@ Best CLI tool for those who are both **Crypto investors** and **Engineers**.
 All data comes from [coinmarketcap.com](https://coinmarketcap.com/) APIs.
 
 ## Upcoming 1.0.0
+
 We are working hard to add more useful features on coinmon!
-* redesign
-* auto-refresh
-* currency detail
-* price chart
+
+- redesign
+- auto-refresh
+- currency detail
+- price chart
 
 ## Install
 
@@ -30,6 +31,7 @@ $ npm install -g coinmon
 ## Usage
 
 To check the top 10 cryptocurrencies ranked by their market cap, simply enter
+
 ```
 $ coinmon
 ```
@@ -72,7 +74,7 @@ $ coinmon -t 1000 // find top 1000
 
 ### Add your portfolio
 
-You can use the `-P` (or `--portfolio`) to retrieve price info and value estimation for your personal crypto portfolio specified in $HOME/.coinmon/portfolio.json in the following format:
+You can use the `-P` (or `--portfolio`) to retrieve price info and value estimation for your personal crypto portfolio specified in \$HOME/.coinmon/portfolio.json in the following format:
 
 ```
 $ cd
@@ -185,8 +187,8 @@ $ docker run --rm -ti coinmon --help
 ## Contributors
 
 Thanks to
-@maticrivo 
-@pgila 
+@maticrivo
+@pgila
 @vladei
 @jaymoulin
 

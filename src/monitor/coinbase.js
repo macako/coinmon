@@ -2,8 +2,9 @@ const axios = require('axios');
 const colors = require('colors');
 
 class CoinBase {
-  constructor(table, apiName, sourceUrl) {
-    this.table = table;
+  constructor(fn, keyboard, apiName, sourceUrl) {
+    this.refresh = fn;
+    this.table = this.refresh(keyboard);
     this.humanizeIsEnabled = true;
     this.apiName = apiName;
     this.sourceUrl = sourceUrl;
@@ -17,7 +18,8 @@ class CoinBase {
       this.updateData(response.data);
     } catch (error) {
       console.error(
-        `${this.apiName} is not working now. Please try again later. ${error} `.red
+        `${this.apiName} is not working now. Please try again later. ${error} `
+          .red
       );
     }
   }
@@ -36,14 +38,19 @@ class CoinBase {
     this.table.screen.render();
   }
 
-  refreshTable(table) {
+  refreshTable(keyboard) {
     this.rowSelected = this.table.rows.selected;
     this.isRefreshTable = true;
-    this.table = table;
+    this.table = this.refresh(keyboard);
     this.updater();
   }
+
   updateData(data) {
     //plese, replace this function in the child
+  }
+
+  getFocus() {
+    this.table.focus();
   }
 }
 

@@ -1,102 +1,95 @@
 #!/usr/bin/env node
+
 const blessed = require('blessed');
 const contrib = require('blessed-contrib');
 const monitor = require('./monitor');
-const screen = blessed.screen();
+const constants = require('./utils/constants.js');
 
-var bitso, coinMarketCap;
-const BITSO_KEY = 'b';
-const COIN_MARKET_CAP_KEY = 'c';
-const BITSO_LABEL = 'bitso (' + BITSO_KEY + ')';
-const COIN_MARKET_CAP_LABEL = 'coinmarketcap (' + COIN_MARKET_CAP_KEY + ')';
-
+let bitso, coinMarketCap;
+var screen = blessed.screen();
 var grid = new contrib.grid({
   rows: 12,
   cols: 10,
   screen: screen
 });
 
-var configTable = function(label_, columnWidth_, isActive_) {
+let configTable = (label, columnWidth, isActive_) => {
   return {
     keys: true,
-    label: label_,
+    label,
     columnSpacing: 1,
     selectedFg: isActive_ ? 'blue' : 'green',
     selectedBg: isActive_ ? 'green' : 'gray',
-    columnWidth: columnWidth_
+    columnWidth
   };
 };
 
-var coinMarketCapTable = grid.set(
-  0,
-  0,
-  6,
-  9,
-  contrib.table,
-  configTable(COIN_MARKET_CAP_LABEL, [7, 7, 17, 12, 12, 12, 14], false)
-);
-
-var bitsoTable = grid.set(
-  6,
-  0,
-  5,
-  9,
-  contrib.table,
-  configTable(BITSO_LABEL, [9, 18, 18, 18, 18], true)
-);
-
-screen.key(['escape', 'q', 'C-c'], function(ch, key) {
+screen.key(['escape', 'q', 'C-c'], (ch, key) => {
   return process.exit(0);
 });
 
-screen.key([COIN_MARKET_CAP_KEY, BITSO_KEY], function(ch, key) {
+screen.key([constants.COIN_MARKET_CAP_KEY, constants.BITSO_KEY], (ch, key) => {
   //allow control the table with the keyboard
   activeTable(ch);
 });
 
-bitsoTable.focus();
-
-screen.on('resize', function(a) {
-  coinMarketCapTable.emit('attach');
-  bitsoTable.emit('attach');
+screen.on('resize', a => {
+  coinMarketCap.table.emit('attach');
+  bitso.table.emit('attach');
 });
 
-var activeTable = function(keyboard) {
-  coinMarketCapTable = grid.set(
-    0,
-    0,
-    6,
-    9,
-    contrib.table,
-    configTable(
-      COIN_MARKET_CAP_LABEL,
-      [7, 7, 17, 12, 12, 12, 14],
-      keyboard == COIN_MARKET_CAP_KEY ? true : false
-    )
-  );
-
-  bitsoTable = grid.set(
+let createBitsoTable = keyboard => {
+  return genericCreateTable(
+    keyboard,
     6,
     0,
     5,
     9,
-    contrib.table,
-    configTable(BITSO_LABEL, [9, 18, 18, 18, 18], keyboard == BITSO_KEY ? true : false)
+    constants.BITSO_LABEL,
+    [9, 18, 18, 18, 18],
+    constants.BITSO_KEY
   );
+};
 
-  coinMarketCap.refreshTable(coinMarketCapTable);
-  bitso.refreshTable(bitsoTable);
+let createCoinMarketCapTable = keyboard => {
+  return genericCreateTable(
+    keyboard,
+    0,
+    0,
+    6,
+    9,
+    constants.COIN_MARKET_CAP_LABEL,
+    [7, 7, 17, 12, 12, 12, 14],
+    constants.COIN_MARKET_CAP_KEY
+  );
+};
 
-  if (keyboard == COIN_MARKET_CAP_KEY) {
-    coinMarketCapTable.focus();
-  } else if (keyboard == BITSO_KEY) {
-    bitsoTable.focus();
+let genericCreateTable = (keyboard, h, i, x, y, label, columns, key) => {
+  return grid.set(
+    h,
+    i,
+    x,
+    y,
+    contrib.table,
+    configTable(label, columns, keyboard == key ? true : false)
+  );
+};
+
+var activeTable = keyboard => {
+  coinMarketCap.refreshTable(keyboard);
+  bitso.refreshTable(keyboard);
+
+  switch (keyboard) {
+    case constants.COIN_MARKET_CAP_KEY:
+      coinMarketCap.getFocus();
+      break;
+    case constants.BITSO_KEY:
+      bitso.getFocus();
+      break;
+    default:
   }
 };
 
-function init() {
-  coinMarketCap = new monitor.MarketCoinCap(coinMarketCapTable); // no Windows supportD
-  bitso = new monitor.Bitso(bitsoTable); // no Windows supportD
-}
-
-init();
+coinMarketCap = new monitor.MarketCoinCap(createCoinMarketCapTable); // no Windows supportD
+bitso = new monitor.Bitso(createBitsoTable); // no Windows supportD
+bitso.getFocus();
