@@ -1,4 +1,4 @@
-var utils = require('../utils');
+var utils = require('../utils/utils.js');
 const axios = require('axios');
 const colors = require('colors');
 const humanize = require('humanize-plus');
